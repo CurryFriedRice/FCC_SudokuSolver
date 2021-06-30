@@ -1,5 +1,7 @@
     const getRow = function(letter)
     {
+      //console.log("letter");
+      //console.log(letter);
     switch(letter.toUpperCase()){
       case 'A': return 0;
       case 'B': return 1;
@@ -22,32 +24,36 @@
 
 
     const indexToCoord = function(index){
-      let retVal = {x: -1, y: -1};
-      retVal['x'] = index % 9 + 1;
-      retVal['y'] = numToLetter(index);
+      let retVal = {row: -1, column: -1};
+      retVal['column'] = index % 9 + 1;
+      retVal['row'] = numToLetter(index);
       return retVal;
     
-      function numToLetter(input/9){
-      switch(input){
-        case 0: return 'A';
-        case 1: return 'B';
-        case 2: return 'C';
-        case 3: return 'D';
-        case 4: return 'E';
-        case 5: return 'F';
-        case 6: return 'G';
-        case 7: return 'H';
-        case 8: return 'I';
-        default:  return -1;
-      }
+      function numToLetter(input){
+        switch(Math.floor(input/9)){
+          case 0: return 'A';
+          case 1: return 'B';
+          case 2: return 'C';
+          case 3: return 'D';
+          case 4: return 'E';
+          case 5: return 'F';
+          case 6: return 'G';
+          case 7: return 'H';
+          case 8: return 'I';
+          default:  return -1;
+        }
       }
     }
     
     const updatePuzzleString = function(puzzle, index, number)
     {
+      //console.log(index + " | " + puzzle.length);
       if(index > puzzle.length - 1 ) return puzzle;
       return puzzle.substring(0,index) + number + puzzle.substring(index+1);
     }
+
+
+    
 class SudokuSolver {
 
   validate(puzzleString) {
@@ -91,9 +97,9 @@ class SudokuSolver {
 
   checkRowPlacement(puzzleString, row, column, value) {
     
-    let startingRow = getRow(row);
+    let startingRow = getRow(row)*9;
     let startingCol = getColumn(column);
-    let startingPos = startingRow*9 + startingCol;
+    let startingPos = startingRow + startingCol;
 //    console.log(puzzleString[startingPos]);
 //    console.log(value);
     if(puzzleString[startingPos] === value) return true;
@@ -113,9 +119,9 @@ class SudokuSolver {
   }
 
   checkColPlacement(puzzleString, row, column, value) {
-    let startingRow = getRow(row);
+    let startingRow = getRow(row)*9;
     let startingCol = getColumn(column);
-    let startingPos = startingRow*9 + startingCol;
+    let startingPos = startingRow + startingCol;
     
 //    console.log(puzzleString[startingPos]);
 //    console.log(value);
@@ -129,16 +135,16 @@ class SudokuSolver {
       {
         scanRange += puzzleString[(startingCol + i*9)];
       }
-      console.log(scanRange);
+      //console.log(scanRange);
       if(scanRange.includes(value))return false; 
       else return true;
     }
   }
 
   checkRegPlacement(puzzleString, row, column, value) {
-    let startingRow = getRow(row);
+    let startingRow = getRow(row)*9;
     let startingCol = getColumn(column);
-    let startingPos = startingRow*9 + startingCol;
+    let startingPos = startingRow + startingCol;
 
      const region = function(coord)
       {
@@ -169,7 +175,7 @@ class SudokuSolver {
       //console.log("==========");
       let scanRange = '';
 
-      let regRow = region(startingRow);
+      let regRow = region(startingRow/9);
       let regCol = region(startingCol);      
       //console.log(regRow + " | " + regCol);
       for (let i = regRow; i < regRow+3 ; i++)
@@ -187,29 +193,95 @@ class SudokuSolver {
   }
 
 
+  isValidSpace(pString, row, column, num){
+    //console.log(row + " | " + column);
+    if(
+      this.checkColPlacement(pString, row, column, num) &&
+      this.checkRowPlacement(pString, row, column, num) &&
+      this.checkRegPlacement(pString, row, column, num)
+    )return true;
+    /*
+    console.log(
+      this.checkColPlacement(pString, row, column, num) + " | " +
+      this.checkRowPlacement(pString, row, column, num) + " | " +
+      this.checkRegPlacement(pString, row, column, num) + " | " + num);
+    */
+    return false;
+  }
+
 
   solve(puzzleString) {
     
     //console.log("Solving puzzle");
     //console.log(puzzleString);
+    let lThresh = 55; 
+    let rThresh = 100;
+
     if(puzzleString === null) return {error: 'Required field missing'};
     else if (true == false)   return {error: 'Puzzle cannot be solved'};
     else{
-      let pString = puzzleStrig;
+      //So here's a local copy of the PuzzleString
+      let pString = puzzleString;
       //So this should find the first instance of a .
-      
       let emptySpace = pString.indexOf('.');
+
+      if(emptySpace === -1) 
+      {
+        //console.log("Puzzle Solved \n" + pString);
+        return pString;
+      }
+      //The . is an empty space that we should
       let coordinates = indexToCoord(emptySpace);
-      
+
+      ///=================///
+      /*
+      if(lThresh < emptySpace && emptySpace < rThresh){
       for(let num = 1; num<=9; num++){
-        if(isValidSpace()) {}
+        console.log(
+          this.checkColPlacement(pString, coordinates['row'], coordinates['column'], num) + " | " + this.checkRowPlacement(pString, coordinates['row'], coordinates['column'], num) + " | " +
+          this.checkRegPlacement(pString, coordinates['row'], coordinates['column'], num));
+        console.log(coordinates['column'] + " | " + coordinates['row'] + " = " +num);
+        }
+      }
+      */
+      for(let num = 1; num<=9; num++){
+        //if(lThresh < emptySpace && emptySpace < rThresh)
+        //console.log(emptySpace + " | " +num + " ? " + pString);
+        if(this.isValidSpace(pString, coordinates['row'], coordinates['column'], num))
+        {
+          pString = updatePuzzleString(pString, emptySpace, num);
+          ///=================///
+          //if(lThresh < emptySpace && emptySpace < rThresh)
+          //  console.log(emptySpace + " | " +num+ " + " + pString );
+      
+          pString = this.solve(pString);
+          
+          if(pString.indexOf('.') === -1) 
+          {
+            //console.log("Puzzle Solved returned in recursion \n" + pString);
+            return pString;
+          }
+        }
+            
+      if(pString[emptySpace] !== '.'){
+          //console.log('Deleting Input ' + pString[emptySpace]);
+          let removed = pString[emptySpace];
+          pString = updatePuzzleString(pString, emptySpace, '.');
+          ///=================///
+          //if(lThresh < emptySpace && emptySpace < rThresh)
+          //  console.log(emptySpace + " | " +removed + " - " + pString);
+        }
+
+      //So if the next empty spot's row does not exist
+      //we set our board's coordinate value to 0
+        
       }
 
-
-
-      return null;
+      return pString;
     }
   }
+
+
 }
 
 

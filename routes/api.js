@@ -71,11 +71,18 @@ module.exports = function (app) {
       console.log(req.body);
       let puzString = req.body.puzzle;
       if(puzString === null || typeof puzString == typeof undefined)response = {error: 'Required field missing'}
-      else response = solver.validate(puzString);
+      else {
+      response = solver.validate(puzString);
       console.log(response);
       //If we find out that this is solvable
-      if(response == true) response = solver.solve(puzString);  
-      
+
+      if(response == true){ 
+        response = solver.solve(puzString);  
+        if(response.includes('.'))response = {puzzle: puzString, error: 'Puzzle cannot be solved' }
+        else response = {puzzle: puzString, solution: response }
+        console.log(response);
+        }
+      }
       res.json(response);
     });
 };
