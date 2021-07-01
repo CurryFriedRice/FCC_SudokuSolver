@@ -63,16 +63,16 @@ class SudokuSolver {
       }
       else*/ if(puzzleString.length != 81) 
       {
-        console.log("Puzzle String is an incorrect length");
+        //console.log("Puzzle String is an incorrect length");
         return { error: 'Expected puzzle to be 81 characters long' };
       }
       else if((/([^0-9.])+/g).test(puzzleString)) 
       {
-        console.log("Puzzle String contains invalid characters");
+        //console.log("Puzzle String contains invalid characters");
         return { error: 'Invalid characters in puzzle' };
       }
       else {
-        console.log("this is a valid puzzle String");
+        //console.log("this is a valid puzzle String");
         return true;
       }
   }
@@ -218,7 +218,6 @@ class SudokuSolver {
     let rThresh = 100;
 
     if(puzzleString === null) return {error: 'Required field missing'};
-    else if (true == false)   return {error: 'Puzzle cannot be solved'};
     else{
       //So here's a local copy of the PuzzleString
       let pString = puzzleString;

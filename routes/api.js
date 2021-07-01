@@ -28,7 +28,7 @@ module.exports = function (app) {
         if(response === true) response = solver.validate(puzString);
 
         let row = coords[0], column = coords[1];
-        console.log(row + " | " + column);
+        //console.log(row + " | " + column);
         
         //So the coordinates are valid, the value is valid, and the puzzle is valid
         //Let's try begin trying to place values into the grid
@@ -68,19 +68,19 @@ module.exports = function (app) {
   app.route('/api/solve')
     .post((req, res) => {
       let response;
-      console.log(req.body);
+      //console.log(req.body);
       let puzString = req.body.puzzle;
-      if(puzString === null || typeof puzString == typeof undefined)response = {error: 'Required field missing'}
+      if(puzString === null || typeof puzString == typeof undefined)response = {error: 'Required field missing'};
       else {
       response = solver.validate(puzString);
-      console.log(response);
+      //console.log(response);
       //If we find out that this is solvable
 
       if(response == true){ 
         response = solver.solve(puzString);  
         if(response.includes('.'))response = {puzzle: puzString, error: 'Puzzle cannot be solved' }
         else response = {puzzle: puzString, solution: response }
-        console.log(response);
+        //console.log(response);
         }
       }
       res.json(response);

@@ -36,6 +36,8 @@ app.use(function(req, res, next) {
 });
 
 //Start our server and tests!
+if(!module.parent){
+  
 const PORT = process.env.PORT || 3000
 app.listen(PORT, function () {
   console.log("Listening on port " + PORT);
@@ -53,4 +55,5 @@ app.listen(PORT, function () {
   }
 });
 
+}
 module.exports = app; // for testing
